@@ -3,10 +3,14 @@
 int main(void) {
 
 	int a = 0;
-	
-	printf("a = ");
 
-	scanf_s("%d", &a);
+	int* ab;
+
+	ab = &a;
+	
+	printf("ab = ");
+
+	scanf_s("%d", &(*ab));
 
 	printf("a = %d", a);
 
