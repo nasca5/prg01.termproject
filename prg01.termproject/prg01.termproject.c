@@ -2,8 +2,12 @@
 
 int main(void) {
 
-	int a = 10;
+	int a = 0;
 	
+	printf("a = ");
+
+	scanf_s("%d", &a);
+
 	printf("a = %d", a);
 
 	return 0;
