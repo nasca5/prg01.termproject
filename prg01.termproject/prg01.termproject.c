@@ -3,6 +3,7 @@
 # include <conio.h>
 # include <stdbool.h>
 # include <time.h>
+# include <stdlib.h>
 
 # define WIDTH 20
 # define HEIGHT 12
@@ -18,7 +19,16 @@ void move_user();
 void display();
 bool reset_game();
 
+// 출력 지연 조절
+int set;
+// 점수
+int score;
+// 목숨
+int life;
+// 출력 화면 카운트
+int cnt_dis = 1;
 
+bool play = TRUE;
 
 typedef struct {
 	
@@ -34,18 +44,12 @@ typedef struct {
 
 } USER;
 
-int set = 100;
-int score;
-int life;
-int result;
-
-bool play = TRUE;
-
 STONE stone[WIDTH];
 USER user;
 
 void start() {
 	
+	int set = 100;
 	int score = 0;
 	int life = 3;
 
@@ -59,10 +63,32 @@ void start() {
 }
 
 void make_stone() {
+	
+	for (int i = 0; i < WIDTH; i++) {
+
+		if (!stone[i].exist) {
+			
+			stone[i].x = rand() % WIDTH;
+			stone[i].y = (HEIGHT -1);
+			stone[i].exist = TRUE;
+
+		}
+
+	}
 
 }
 
 void move_stone() {
+
+	for (int i = 0; i < WIDTH; i++) {
+
+		if (stone[i].exist) {
+
+			stone[i].y--;
+
+		}
+
+	}
 
 }
 
@@ -107,10 +133,9 @@ bool reset_game() {
 	
 }
 
-
-
-
 void restart() {
+
+	int result;
 
 	while (true) {
 		
@@ -146,6 +171,8 @@ int main(void) {
 
 	while (play) {
 
+		srand((int)time(NULL));
+
 		make_stone();
 
 		move_stone();
@@ -166,9 +193,9 @@ int main(void) {
 
 		}
 
-		Sleep(set);
 		system("cls");
-
+		Sleep(set);
+		
 	}
 
 	return 0;
