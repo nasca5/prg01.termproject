@@ -6,7 +6,9 @@
 # include <stdlib.h>
 
 # define WIDTH 20
-# define HEIGHT 12
+# define HEIGHT 10
+
+char board[HEIGHT + 1][WIDTH];
 
 void start();
 void restart();
@@ -17,7 +19,7 @@ void move_stone();
 void remove_stone();
 void move_user();
 void display();
-bool reset_game();
+int reset_game();
 
 // 출력 지연 조절
 int set;
@@ -25,8 +27,8 @@ int set;
 int score;
 // 목숨
 int life;
-// 출력 화면 카운트
-int cnt_dis = 1;
+// 돌 갯수 카운트
+int cnt = 0;
 
 bool play = TRUE;
 
@@ -51,7 +53,7 @@ USER user;
 
 //게임 초기화 
 void start() {
-	
+
 	set = 100;
 	score = 0;
 	life = 3;
@@ -59,7 +61,23 @@ void start() {
 	for (int i = 0; i < WIDTH; i++) {
 
 		stone[i].exist = FALSE;
-		user.x = WIDTH / 2;
+
+	}
+
+	user.x = WIDTH / 2;
+
+	board[HEIGHT - 1][user.x] = 'm';
+
+	for (int i = 0; i < HEIGHT + 1; i++) {
+
+		for (int j = 0; j < WIDTH; j++) {
+
+			board[i][j] = ' ';
+
+			if (i == HEIGHT)
+				board[i][j] = '=';
+
+		}
 
 	}
 
@@ -72,9 +90,15 @@ void make_stone() {
 
 		if (!stone[i].exist) {
 			
-			stone[i].x = rand() % WIDTH;
-			stone[i].y = (HEIGHT -1);
-			stone[i].exist = TRUE;
+			if (cnt <= 9) {
+
+				stone[i].x = rand() % WIDTH;
+				stone[i].y = 0;
+				stone[i].exist = TRUE;
+				board[stone[i].y][stone[i].x] = 'o';
+				cnt++;
+
+			}
 
 		}
 
@@ -88,8 +112,10 @@ void move_stone() {
 	for (int i = 0; i < WIDTH; i++) {
 
 		if (stone[i].exist) {
-
-			stone[i].y--;
+			
+			board[stone[i].y][stone[i].x] = ' ';
+			stone[i].y++;
+			board[stone[i].y][stone[i].x] = 'o';
 
 		}
 
@@ -99,6 +125,18 @@ void move_stone() {
 
 //바닥에 닿은 돌 사라지는 함수
 void remove_stone() {
+
+	for (int i = 0; i < WIDTH; i++) {
+
+		if (stone[i].exist && (stone[i].y > HEIGHT - 1)) {
+
+			board[stone[i].y][stone[i].x] = '=';
+			stone[i].exist = FALSE;
+			cnt--;
+		
+		}
+
+	}
 
 }
 
@@ -115,15 +153,47 @@ void make_bad() {
 //유저 움직이는 함수
 void move_user() {
 
+	board[HEIGHT - 1][user.x] = ' ';
+
+	if (GetAsyncKeyState(VK_LEFT))
+		
+	    user.x--;
+
+	else if (GetAsyncKeyState(VK_RIGHT))
+
+	    user.x++;
+
+	if (user.x < 0)
+		user.x = 0;
+
+	else if (user.x > (WIDTH - 1))
+		user.x = WIDTH - 1;
+
+	board[HEIGHT - 1][user.x] = 'm';
+
 }
 
 //화면 출력 함수
 void display() {
 
+	system("cls");
+
+	for (int i = 0; i < HEIGHT + 1; i++) {
+
+		for (int j = 0; j < WIDTH; j++) {
+
+			printf("%c", board[i][j]);
+
+		}
+
+		printf("\n");
+
+	}
+
 }
 
 //조건 충족시 종료시키는 함수
-bool reset_game() {
+int reset_game() {
 
 	if (life == 0 || score == 10) {
 		
@@ -190,9 +260,9 @@ int main(void) {
 
 		move_user();
 
-		make_bad();
+		//make_bad();
 
-		make_good();
+		//make_good();
 
 		display();
 	
@@ -202,7 +272,6 @@ int main(void) {
 
 		}
 
-		system("cls");
 		Sleep(set);
 		
 	}
