@@ -30,6 +30,7 @@ int cnt_dis = 1;
 
 bool play = TRUE;
 
+//돌
 typedef struct {
 	
 	int x;
@@ -38,6 +39,7 @@ typedef struct {
 
 } STONE ;
 
+//유저
 typedef struct {
 
 	int x;
@@ -47,11 +49,12 @@ typedef struct {
 STONE stone[WIDTH];
 USER user;
 
+//게임 초기화 
 void start() {
 	
-	int set = 100;
-	int score = 0;
-	int life = 3;
+	set = 100;
+	score = 0;
+	life = 3;
 
 	for (int i = 0; i < WIDTH; i++) {
 
@@ -62,6 +65,7 @@ void start() {
 
 }
 
+//돌 생성
 void make_stone() {
 	
 	for (int i = 0; i < WIDTH; i++) {
@@ -78,6 +82,7 @@ void make_stone() {
 
 }
 
+//돌 움직이는 함수
 void move_stone() {
 
 	for (int i = 0; i < WIDTH; i++) {
@@ -92,39 +97,42 @@ void move_stone() {
 
 }
 
+//바닥에 닿은 돌 사라지는 함수
 void remove_stone() {
 
 }
 
+//이로운 효과 생성하는 함수
 void make_good() {
 
 }
 
+//해로운 효과 생성하는 함수
 void make_bad() {
 
 }
 
+//유저 움직이는 함수
 void move_user() {
 
 }
 
+//화면 출력 함수
 void display() {
 
 }
 
+//조건 충족시 종료시키는 함수
 bool reset_game() {
 
-	if (life == 0) {
+	if (life == 0 || score == 10) {
 		
-		printf("목숨이 0개입니다.\n");
+		if (life == 0)
+			printf("목숨이 0개입니다.\n");
 
-		return TRUE;
-	
-	}
-
-	else if (score == 10) {
-
-		printf("점수가 10점이 되었습니다! 축하드립니다!\n");
+		else
+			printf("점수가 10점이 되었습니다! 축하드립니다!\n");
+		
 		return TRUE;
 
 	}
@@ -133,6 +141,7 @@ bool reset_game() {
 	
 }
 
+//게임 재시작 여부를 묻고 처리하는 함수
 void restart() {
 
 	int result;
@@ -151,7 +160,7 @@ void restart() {
 
 	if (result == 1) {
 
-		printf("game restart");
+		printf("-GAME START-");
 		start();
 
 	}
@@ -159,7 +168,7 @@ void restart() {
 	else {
 
 		play = FALSE;
-		printf("game end");
+		printf("-THE END-");
 
 	}
 
