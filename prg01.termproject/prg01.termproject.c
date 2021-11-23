@@ -223,14 +223,7 @@ int manage_game() {
 
 		if ((stone[i].exist && stone[i].y == HEIGHT - 1) && (stone[i].x == user.x)) {
 
-			if (stone[i].type == 0)
-				return 0;
-
-			else if (stone[i].type == 1)
-				return 1;
-
-			else if (stone[i].type == 2)
-				return 2;
+			return stone[i].type;
 
 		}
 
@@ -246,7 +239,7 @@ void manage_effects() {
 	if (manage_game() == 0) {
 
 		score++;
-		set += 10;
+		life++;
 
 		if (set > 100)
 			set = 100;
@@ -256,7 +249,7 @@ void manage_effects() {
 	else if (manage_game() == 1) {
 
 		score++;
-		life++;
+		set += 10;
 
 		if (life > 3)
 			life = 3;
@@ -306,7 +299,7 @@ void display() {
 	for (int i = 0; i < HEIGHT + 1; i++) {
 
 		if (i == 0)
-			printf("life : %d  score : %d", life, score);
+			printf("LIFE : %d SCORE : %d SPEED : %d", life, score, set/10);
 
 		else if (i == 1) 
 			printf ("    MADE BY K.H.S");
