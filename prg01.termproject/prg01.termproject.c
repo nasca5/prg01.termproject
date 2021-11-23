@@ -1,17 +1,16 @@
 # include <stdio.h>
-# include <Windows.h>
+# include <windows.h>
 # include <conio.h>
 # include <stdbool.h>
 # include <time.h>
 # include <stdlib.h>
 
 # define WIDTH 20
-# define HEIGHT 10
+# define HEIGHT 13
 
 char board[HEIGHT + 1][WIDTH];
 
-void start();
-void restart();
+void start_game();
 void make_bad();
 void make_good();
 void make_stone();
@@ -20,6 +19,8 @@ void remove_stone();
 void move_user();
 void display();
 int reset_game();
+void restart();
+int manage_life();
 
 // 출력 지연 조절
 int set;
@@ -27,8 +28,6 @@ int set;
 int score;
 // 목숨
 int life;
-// 돌 갯수 카운트
-int cnt = 0;
 
 bool play = TRUE;
 
@@ -52,7 +51,7 @@ STONE stone[WIDTH];
 USER user;
 
 //게임 초기화 
-void start() {
+void start_game() {
 
 	set = 100;
 	score = 0;
@@ -89,16 +88,12 @@ void make_stone() {
 	for (int i = 0; i < WIDTH; i++) {
 
 		if (!stone[i].exist) {
-			
-			if (cnt <= 9) {
 
-				stone[i].x = rand() % WIDTH;
-				stone[i].y = 0;
-				stone[i].exist = TRUE;
-				board[stone[i].y][stone[i].x] = 'o';
-				cnt++;
+			stone[i].x = rand() % WIDTH;
+			stone[i].y = 1;
+			stone[i].exist = TRUE;
 
-			}
+			break;
 
 		}
 
@@ -112,6 +107,13 @@ void move_stone() {
 	for (int i = 0; i < WIDTH; i++) {
 
 		if (stone[i].exist) {
+
+			if (stone[i].y == 1) {
+
+				stone[i].y++;
+				board[stone[i].y][stone[i].x] = 'o';
+
+			}
 			
 			board[stone[i].y][stone[i].x] = ' ';
 			stone[i].y++;
@@ -132,11 +134,24 @@ void remove_stone() {
 
 			board[stone[i].y][stone[i].x] = '=';
 			stone[i].exist = FALSE;
-			cnt--;
 		
 		}
 
 	}
+
+}
+
+//목숨 관리
+int manage_life() {
+
+	for (int i = 0; i < WIDTH; i++) {
+
+		if ((stone[i].exist && stone[i].y == HEIGHT - 1) && (stone[i].x == user.x))
+			return TRUE;
+
+	}
+
+	return FALSE;
 
 }
 
@@ -155,11 +170,11 @@ void move_user() {
 
 	board[HEIGHT - 1][user.x] = ' ';
 
-	if (GetAsyncKeyState(VK_LEFT))
+	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 		
 	    user.x--;
 
-	else if (GetAsyncKeyState(VK_RIGHT))
+	else if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
 
 	    user.x++;
 
@@ -180,9 +195,19 @@ void display() {
 
 	for (int i = 0; i < HEIGHT + 1; i++) {
 
-		for (int j = 0; j < WIDTH; j++) {
+		if (i == 0)
+			printf("life : %d  score : %d", life, score);
 
-			printf("%c", board[i][j]);
+		else if (i == 1) 
+			printf ("    MADE BY K.H.S");
+
+		else {
+
+			for (int j = 0; j < WIDTH; j++) {
+
+				printf("%c", board[i][j]);
+
+			}
 
 		}
 
@@ -196,13 +221,16 @@ void display() {
 int reset_game() {
 
 	if (life == 0 || score == 10) {
+
+		system("cls");
 		
 		if (life == 0)
-			printf("목숨이 0개입니다.\n");
+			printf("\n\n\n\n\n\n\n         -YOU DIE-\n");
 
 		else
-			printf("점수가 10점이 되었습니다! 축하드립니다!\n");
+			printf("\n\n\n\n\n\n\n         -YOU WIN-\n");
 		
+		Sleep(2000);
 		return TRUE;
 
 	}
@@ -216,29 +244,48 @@ void restart() {
 
 	int result;
 
+	system("cls");
+
 	while (true) {
 		
-		printf("다시 하시겠습니까? (Y = 1 / N = 0) : ");
+		printf("TRY AGAIN (Y = 1 / N = 0) : ");
 		scanf_s("%d", &result);
 
-		if ((result == 1) || (result == 0))
+		if ((result == 1) || (result == 0)) {
+			
+			system("cls");
 			break;
-
-		printf("1(Yes) or 0(No)으로 입력해주세요.\n");
+		
+		}
+		
+		system("cls");
+		printf("PLEASE 1(Yes) or 0(NO)!\n");
 			
 	}
 
 	if (result == 1) {
 
-		printf("-GAME START-");
-		start();
+		printf("\n\n\n\n\n\n\n        -GAME START-\n");
+		Sleep(1000);
+		system("cls");
+		
+		for (int i = 5; i >= 1; i--) {
+
+			printf("\n\n\n\n\n\n\n        %d SECONDS", i);
+			Sleep(1000);
+			system("cls");
+			
+		}
+
+		start_game();
 
 	}
 
 	else {
 
 		play = FALSE;
-		printf("-THE END-");
+		printf("\n\n\n\n\n\n\n          -THE END-");
+		Sleep(2000);
 
 	}
 
@@ -246,17 +293,22 @@ void restart() {
 
 int main(void) {
 
-	start();
+	srand((int)time(NULL));
+
+	system("mode con:cols=30 lines=15");
+
+	start_game();
 
 	while (play) {
-
-		srand((int)time(NULL));
 
 		make_stone();
 
 		move_stone();
 
 		remove_stone();
+
+		if (manage_life())
+			life--;
 
 		move_user();
 
