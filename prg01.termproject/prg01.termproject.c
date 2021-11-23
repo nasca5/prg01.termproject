@@ -10,17 +10,19 @@
 
 char board[HEIGHT + 1][WIDTH];
 
+void start_menu();
+void design_console();
 void start_game();
-void make_bad();
 void make_good();
 void make_stone();
 void move_stone();
 void remove_stone();
 void move_user();
 void display();
-int reset_game();
 void restart();
-int manage_life();
+void manage_effects();
+int manage_game();
+int reset_game();
 
 // 출력 지연 조절
 int set;
@@ -28,6 +30,8 @@ int set;
 int score;
 // 목숨
 int life;
+// 화면 출력 카운트
+int cnt;
 
 bool play = TRUE;
 
@@ -36,6 +40,7 @@ typedef struct {
 	
 	int x;
 	int y;
+	int type;
 	bool exist;
 
 } STONE ;
@@ -50,12 +55,22 @@ typedef struct {
 STONE stone[WIDTH];
 USER user;
 
+//콘솔 디자인 관리
+void design_console() {
+
+	system("mode con:cols=30 lines=17");
+	system("title 돌 피하기 게임");
+	system("color 70");
+
+}
+
 //게임 초기화 
 void start_game() {
 
 	set = 100;
 	score = 0;
 	life = 3;
+	cnt = 0;
 
 	for (int i = 0; i < WIDTH; i++) {
 
@@ -82,16 +97,57 @@ void start_game() {
 
 }
 
+//게임 시작 메뉴 관리
+void start_menu() {
+
+	while (true) {
+
+		system("cls");
+
+		printf("\n\n조작법 : ←(LEFT) / →(RIGHT)");
+		printf("\n\n\n        돌 피하기 게임\n\n");
+		printf("        Hannam Univ.\n");
+		printf("        termproject\n");
+		printf("\n    PRESS THE ENTER KEY...\n");
+
+		if (GetAsyncKeyState(VK_RETURN) & 0x8000) {
+
+			system("cls");
+
+			printf("\n\n\n\n\n\n\n          GOOD LUCK!");
+			Sleep(1000);
+			break;
+
+		}
+
+	}
+
+	start_game();
+
+}
+
 //돌 생성
 void make_stone() {
 	
 	for (int i = 0; i < WIDTH; i++) {
 
-		if (!stone[i].exist) {
+		if ((!stone[i].exist) && (cnt % 50 == 0)) {
 
 			stone[i].x = rand() % WIDTH;
 			stone[i].y = 1;
 			stone[i].exist = TRUE;
+			stone[i].type = rand() % 2;
+
+			break;
+
+		}
+
+		else if (!stone[i].exist) {
+
+			stone[i].x = rand() % WIDTH;
+			stone[i].y = 1;
+			stone[i].exist = TRUE;
+			stone[i].type = 2;
 
 			break;
 
@@ -101,24 +157,40 @@ void make_stone() {
 
 }
 
-//돌 움직이는 함수
+//돌과 이로운 효과 움직이는 함수
 void move_stone() {
+
+	char var[20] = "GAo";
+	char* cp = var;
 
 	for (int i = 0; i < WIDTH; i++) {
 
 		if (stone[i].exist) {
+		
+			if (stone[i].type == 0) {
 
-			if (stone[i].y == 1) {
-
+				board[stone[i].y][stone[i].x] = ' ';
 				stone[i].y++;
-				board[stone[i].y][stone[i].x] = 'o';
+				board[stone[i].y][stone[i].x] = *cp;
 
 			}
-			
-			board[stone[i].y][stone[i].x] = ' ';
-			stone[i].y++;
-			board[stone[i].y][stone[i].x] = 'o';
 
+			else if (stone[i].type == 1) {
+
+				board[stone[i].y][stone[i].x] = ' ';
+				stone[i].y++;
+				board[stone[i].y][stone[i].x] = *(cp + 1);
+
+			}
+
+			else if (stone[i].type == 2) {
+
+				board[stone[i].y][stone[i].x] = ' ';
+				stone[i].y++;
+				board[stone[i].y][stone[i].x] = *(cp + 2);
+
+			}
+		
 		}
 
 	}
@@ -142,26 +214,61 @@ void remove_stone() {
 }
 
 //목숨 관리
-int manage_life() {
+int manage_game() {
 
 	for (int i = 0; i < WIDTH; i++) {
 
-		if ((stone[i].exist && stone[i].y == HEIGHT - 1) && (stone[i].x == user.x))
-			return TRUE;
+		if ((stone[i].exist && stone[i].y == HEIGHT - 1) && (stone[i].x == user.x)) {
+
+			if (stone[i].type == 0)
+				return 0;
+
+			else if (stone[i].type == 1)
+				return 1;
+
+			else if (stone[i].type == 2)
+				return 2;
+
+		}
 
 	}
 
-	return FALSE;
+	return 3;
 
 }
 
-//이로운 효과 생성하는 함수
-void make_good() {
+//효과 관리 함수
+void manage_effects() {
 
-}
+	if (manage_game() == 0) {
 
-//해로운 효과 생성하는 함수
-void make_bad() {
+		score++;
+		set += 10;
+
+		if (set > 100)
+			set = 100;
+
+	}
+
+	else if (manage_game() == 1) {
+
+		score++;
+		life++;
+
+		if (life > 3)
+			life = 3;
+
+	}
+
+	else if (manage_game() == 2) {
+
+		life--;
+		set -= 10;
+
+		if (set < 10)
+			set = 10;
+
+	}
 
 }
 
@@ -170,11 +277,11 @@ void move_user() {
 
 	board[HEIGHT - 1][user.x] = ' ';
 
-	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
+	if (GetAsyncKeyState(VK_LEFT))
 		
 	    user.x--;
 
-	else if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
+	else if (GetAsyncKeyState(VK_RIGHT))
 
 	    user.x++;
 
@@ -214,6 +321,9 @@ void display() {
 		printf("\n");
 
 	}
+
+	printf ("G : +1 SCORE, +1 LIFE\n");
+	printf("A : +1 SCORE, SPEED ↓0.1\n");
 
 }
 
@@ -271,7 +381,7 @@ void restart() {
 		
 		for (int i = 5; i >= 1; i--) {
 
-			printf("\n\n\n\n\n\n\n        %d SECONDS", i);
+			printf("\n\n\n\n\n\n\n          %d SECONDS", i);
 			Sleep(1000);
 			system("cls");
 			
@@ -293,28 +403,25 @@ void restart() {
 
 int main(void) {
 
+	design_console();
+
 	srand((int)time(NULL));
 
-	system("mode con:cols=30 lines=15");
-
-	start_game();
+	start_menu();
 
 	while (play) {
+
+		cnt++;
 
 		make_stone();
 
 		move_stone();
 
 		remove_stone();
-
-		if (manage_life())
-			life--;
-
+			
 		move_user();
 
-		//make_bad();
-
-		//make_good();
+		manage_effects();
 
 		display();
 	
