@@ -5,9 +5,12 @@
 # include <time.h>
 # include <stdlib.h>
 
+//가로 길이
 # define WIDTH 20
+//세로 길이
 # define HEIGHT 13
 
+//돌 피하기 게임 보드판
 char board[HEIGHT + 1][WIDTH];
 
 void start_menu();
@@ -97,7 +100,7 @@ void start_game() {
 
 }
 
-//게임 시작 메뉴 관리
+//게임 시작 총괄 관리
 void start_menu() {
 
 	while (true) {
@@ -126,7 +129,7 @@ void start_menu() {
 
 }
 
-//돌 생성
+//돌과 이로운 효과 생성
 void make_stone() {
 	
 	for (int i = 0; i < WIDTH; i++) {
@@ -213,7 +216,7 @@ void remove_stone() {
 
 }
 
-//목숨 관리
+//유저와 충돌한 것 판별
 int manage_game() {
 
 	for (int i = 0; i < WIDTH; i++) {
@@ -237,7 +240,7 @@ int manage_game() {
 
 }
 
-//효과 관리 함수
+//게임 스탯 관리
 void manage_effects() {
 
 	if (manage_game() == 0) {
@@ -272,7 +275,7 @@ void manage_effects() {
 
 }
 
-//유저 움직이는 함수
+//유저 이동
 void move_user() {
 
 	board[HEIGHT - 1][user.x] = ' ';
@@ -295,7 +298,7 @@ void move_user() {
 
 }
 
-//화면 출력 함수
+//화면 출력
 void display() {
 
 	system("cls");
@@ -327,7 +330,7 @@ void display() {
 
 }
 
-//조건 충족시 종료시키는 함수
+//조건 충족시 종료
 int reset_game() {
 
 	if (life == 0 || score == 10) {
@@ -349,7 +352,7 @@ int reset_game() {
 	
 }
 
-//게임 재시작 여부를 묻고 처리하는 함수
+//게임 재시작 여부 확인
 void restart() {
 
 	int result;
@@ -401,6 +404,7 @@ void restart() {
 
 }
 
+//메인 함수
 int main(void) {
 
 	design_console();
