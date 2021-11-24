@@ -16,7 +16,6 @@ char board[HEIGHT + 1][WIDTH];
 void start_menu();
 void design_console();
 void start_game();
-void make_good();
 void make_stone();
 void move_stone();
 void remove_stone();
@@ -111,17 +110,20 @@ void start_menu() {
 		printf("\n\n\n        돌 피하기 게임\n\n");
 		printf("        Hannam Univ.\n");
 		printf("        termproject\n");
-		printf("\n    PRESS THE ENTER KEY...\n");
+		printf("\n    PRESS THE ENTER KEY...");
 
-		if (GetAsyncKeyState(VK_RETURN) & 0x8000) {
+		if (GetAsyncKeyState(VK_RETURN)) {
 
 			system("cls");
 
 			printf("\n\n\n\n\n\n\n          GOOD LUCK!");
 			Sleep(1000);
+
 			break;
 
 		}
+
+		Sleep(1000);
 
 	}
 
@@ -241,9 +243,9 @@ void manage_effects() {
 		score++;
 		life++;
 
-		if (set > 100)
-			set = 100;
-
+		if (life > 3)
+			life = 3;
+		
 	}
 
 	else if (manage_game() == 1) {
@@ -251,8 +253,8 @@ void manage_effects() {
 		score++;
 		set += 10;
 
-		if (life > 3)
-			life = 3;
+		if (set > 100)
+			set = 100;
 
 	}
 
