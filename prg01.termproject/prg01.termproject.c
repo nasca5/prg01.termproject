@@ -162,7 +162,7 @@ void make_stone() {
 
 }
 
-//돌과 이로운 효과 움직이는 함수
+//돌과 이로운 효과 관리
 void move_stone() {
 
 	char var[20] = "GAo";
@@ -202,7 +202,7 @@ void move_stone() {
 
 }
 
-//바닥에 닿은 돌 사라지는 함수
+//바닥에 닿은 돌 제거
 void remove_stone() {
 
 	for (int i = 0; i < WIDTH; i++) {
